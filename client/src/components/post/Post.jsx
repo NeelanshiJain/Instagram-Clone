@@ -12,10 +12,16 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { makeRequest } from "../../axios";
 import { useContext } from "react";
 import { AuthContext } from "../../context/authContext";
+import BookmarkIconFilled from "@mui/icons-material/Bookmark";
+import BookmarkIconOutline from "@mui/icons-material/BookmarkBorder";
 
 const Post = ({ post }) => {
   const [commentOpen, setCommentOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editedDesc, setEditedDesc] = useState(post.desc);
+  const [editedImg, setEditedImg] = useState(post.img);
+  const [isBookmarked, setIsBookmarked] = useState(post.isBookmarked || false);
 
   const { currentUser } = useContext(AuthContext);
 
@@ -51,6 +57,53 @@ const Post = ({ post }) => {
     }
   );
 
+  const handleEdit = () => {
+    if (post.userId === currentUser.id) {
+      setEditMode(true);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditMode(false);
+    setEditedDesc(post.desc);
+    setEditedImg(post.img);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      await makeRequest.put(`/posts/${post.id}`, {
+        desc: editedDesc,
+        img: editedImg,
+      });
+      // Optionally, update the post in the UI with the edited content
+      setEditMode(false);
+    } catch (error) {
+      console.error("Error editing post:", error);
+      // Handle error
+    }
+  };
+
+  const handleDescChange = (e) => {
+    setEditedDesc(e.target.value);
+  };
+
+  const toggleBookmark = async () => {
+    setIsBookmarked(!isBookmarked);
+    try {
+      if (isBookmarked) {
+        // Remove bookmark
+        await makeRequest.delete(`/bookmarks/${post.id}`);
+      } else {
+        // Add bookmark
+        await makeRequest.post("/bookmarks", {
+          postId: post.id,
+        });
+      }
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+    }
+  };
+
   const handleLike = () => {
     mutation.mutate(data.includes(currentUser.id));
   };
@@ -64,7 +117,7 @@ const Post = ({ post }) => {
       <div className="container">
         <div className="user">
           <div className="userInfo">
-            <img src={"/upload/"+post.profilePic} alt="" />
+            <img src={"/upload/" + post.profilePic} alt="" />
             <div className="details">
               <Link
                 to={`/profile/${post.userId}`}
@@ -83,6 +136,20 @@ const Post = ({ post }) => {
         <div className="content">
           <p>{post.desc}</p>
           <img src={"/upload/" + post.img} alt="" />
+        </div>
+        <div className="bookmark-icon" onClick={toggleBookmark}>
+          {isBookmarked ? <BookmarkIconFilled /> : <BookmarkIconOutline />}
+        </div>
+        <div className="content">
+          {editMode ? (
+            <div className="edit-form">
+              <textarea value={editedDesc} onChange={handleDescChange} />
+              <button onClick={handleSaveEdit}>Save</button>
+              <button onClick={handleCancelEdit}>Cancel</button>
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
         <div className="info">
           <div className="item">
@@ -107,6 +174,9 @@ const Post = ({ post }) => {
             Share
           </div>
         </div>
+        {post.userId === currentUser.id && !editMode && (
+          <button onClick={handleEdit}>Edit</button>
+        )}
         {commentOpen && <Comments postId={post.id} />}
       </div>
     </div>

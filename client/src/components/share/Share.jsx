@@ -9,6 +9,7 @@ import { makeRequest } from "../../axios";
 const Share = () => {
   const [file, setFile] = useState(null);
   const [desc, setDesc] = useState("");
+  const [visibility, setVisibility] = useState("public");
 
   const upload = async () => {
     try {
@@ -41,9 +42,10 @@ const Share = () => {
     e.preventDefault();
     let imgUrl = "";
     if (file) imgUrl = await upload();
-    mutation.mutate({ desc, img: imgUrl });
+    mutation.mutate({ desc, img: imgUrl, visibility });
     setDesc("");
     setFile(null);
+    setVisibility("public");
   };
 
   return (
@@ -90,6 +92,13 @@ const Share = () => {
             </div>
           </div>
           <div className="right">
+            <select
+              value={visibility}
+              onChange={(e) => setVisibility(e.target.value)}
+            >
+              <option value="public">Public</option>
+              <option value="friends_only">Friends Only</option>
+            </select>
             <button onClick={handleClick}>Share</button>
           </div>
         </div>
