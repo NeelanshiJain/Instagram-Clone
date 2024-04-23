@@ -12,6 +12,7 @@ const Posts = ({ userId }) => {
 
   return (
     <div className="posts">
+      <h2>All Posts</h2>
       {error
         ? "Something went wrong!"
         : isLoading

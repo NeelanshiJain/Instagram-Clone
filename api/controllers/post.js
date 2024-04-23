@@ -97,3 +97,18 @@ export const editPost = (req, res) => {
     return res.status(200).json("Post has been updated.");
   });
 };
+
+export const getTrendingPosts = (req, res) => {
+  const q = `SELECT p.*, tp.likesCount, u.id AS userId, name, profilePic 
+  FROM trending_posts AS tp
+  JOIN posts AS p ON tp.postId = p.id
+  JOIN users AS u ON p.userId = u.id`;
+
+  db.query(q, (err, data) => {
+    if (err) {
+      console.error("Error fetching trending posts:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    res.status(200).json(data);
+  });
+};
