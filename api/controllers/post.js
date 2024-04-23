@@ -5,38 +5,68 @@ import moment from "moment";
 export const getPosts = (req, res) => {
   const userId = req.query.userId;
   const token = req.cookies.accessToken;
+  const cursor = req.headers.cursor;
+
   if (!token) return res.status(401).json("Not logged in!");
 
   jwt.verify(token, "secretkey", (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
-    console.log(userId);
-
-    if (err || !userInfo.id) {
-      // If user is not logged in or user ID is undefined, fetch only public posts
-      const q = `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p 
+    let baseQuery = `
+      SELECT p.*, u.id AS userId, name, profilePic 
+      FROM posts AS p 
       JOIN users AS u ON (u.id = p.userId)
-      WHERE p.visibility = 'public'
-      ORDER BY p.createdAt DESC`;
+    `;
+    let condition = "";
+    let values = [];
 
-      db.query(q, (err, data) => {
-        if (err) return res.status(500).json(err);
-        return res.status(200).json(data);
-      });
+    if (!userInfo || !userInfo.id) {
+      condition = " WHERE p.visibility = 'public'";
     } else {
-      // If user is logged in, fetch public posts and posts visible to the user and their friends
-      const q = `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p 
-      JOIN users AS u ON (u.id = p.userId)
-      WHERE p.visibility = 'public' OR (p.visibility = 'friends_only' AND (p.userId = ? OR p.userId IN (SELECT followedUserId FROM relationships WHERE followerUserId = ?)))
-      ORDER BY p.createdAt DESC`;
-
-      const values = [userInfo.id, userInfo.id];
-
-      db.query(q, values, (err, data) => {
-        if (err) return res.status(500).json(err);
-        return res.status(200).json(data);
-      });
+      condition = `
+        WHERE p.visibility = 'public' OR 
+        (p.visibility = 'friends_only' AND (
+          p.userId = ? OR 
+          p.userId IN (SELECT followedUserId FROM relationships WHERE followerUserId = ?)
+        ))
+      `;
+      values = [userInfo.id, userInfo.id];
     }
+
+    if (cursor) {
+      condition += " AND p.createdAt < ?";
+      values.push(cursor);
+    }
+
+    baseQuery += condition + " ORDER BY p.createdAt DESC LIMIT 5";
+    console.log(baseQuery);
+    console.log(values);
+    db.query(baseQuery, values, (err, data) => {
+      if (err) return res.status(500).json(err);
+
+      const hasNextPage = data.length === 2; // Check if there are more posts
+      // Extract the next cursor from the data
+      const nextCursor = hasNextPage ? data[data.length - 1].createdAt : null;
+
+      // Format the nextCursor to match the format in the database
+      const formattedNextCursor = nextCursor
+        ? moment(nextCursor).format("YYYY-MM-DD HH:mm:ss")
+        : null;
+
+      // Set the nextCursor in the response headers
+      if (formattedNextCursor) {
+        res.setHeader("nextCursor", formattedNextCursor);
+      }
+      const responseData = {
+        posts: data,
+        hasNextPage: hasNextPage,
+        nextCursor: formattedNextCursor,
+      };
+      console.log(`previouscursor` + cursor);
+      console.log(`nextcursor` + formattedNextCursor);
+      console.log(`resonsedata` + responseData.nextCursor);
+      return res.status(200).json(responseData);
+    });
   });
 };
 

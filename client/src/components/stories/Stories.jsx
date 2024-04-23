@@ -17,6 +17,7 @@ const Stories = () => {
 
   return (
     <div className="stories">
+      <h2>Stories</h2>
       <div className="story">
         <img src={"/upload/" + currentUser.profilePic} alt="" />
         <span>{currentUser.name}</span>
