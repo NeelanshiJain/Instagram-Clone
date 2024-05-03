@@ -28,6 +28,9 @@ const Navbar = () => {
         ) : (
           <DarkModeOutlinedIcon onClick={toggle} />
         )}
+        <a href="/search">
+          Search <i className="fa fa-search"></i>
+        </a>
         <GridViewOutlinedIcon />
         <div className="search">
           <SearchOutlinedIcon />

@@ -13,6 +13,7 @@ import cookieParser from "cookie-parser";
 import cron from "node-cron";
 import updateTrendingPosts from "./cron/updateTrendingPosts.js"; // Import the script to run the function
 import storyRoutes from "./routes/stories.js";
+import searchRoutes from "./routes/search.js";
 
 //middlewares
 app.use((req, res, next) => {
@@ -51,6 +52,7 @@ app.use("/api/likes", likeRoutes);
 app.use("/api/relationships", relationshipRoutes);
 app.use("/api/bookmarks", bookmarkRoutes);
 app.use("/api/stories", storyRoutes);
+app.use("/api/search", searchRoutes);
 
 // Schedule the cron job to run every 15 minutes
 cron.schedule("*/60 * * * * *", () => {

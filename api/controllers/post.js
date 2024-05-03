@@ -11,7 +11,6 @@ export const getPosts = (req, res) => {
 
   jwt.verify(token, "secretkey", (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
-
     let baseQuery = `
       SELECT p.*, u.id AS userId, name, profilePic 
       FROM posts AS p 
@@ -129,11 +128,16 @@ export const editPost = (req, res) => {
 };
 
 export const getTrendingPosts = (req, res) => {
-  const q = `SELECT p.*, tp.likesCount, u.id AS userId, name, profilePic 
+  let q = `SELECT p.*, tp.likesCount, u.id AS userId, name, profilePic 
   FROM trending_posts AS tp
   JOIN posts AS p ON tp.postId = p.id
   JOIN users AS u ON p.userId = u.id`;
 
+  let condition = "";
+  condition = " WHERE p.visibility = 'public'";
+  q += condition;
+  console.log("qqqqqqqqqqqq");
+  console.log(q);
   db.query(q, (err, data) => {
     if (err) {
       console.error("Error fetching trending posts:", err);

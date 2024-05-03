@@ -15,6 +15,9 @@ import { useContext } from "react";
 import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/authContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import SearchFriends from "./components/search/search";
+import BookMarks from "./components/bookmarks/BookMarks";
+import LeftBar from "./components/leftBar/LeftBar";
 
 function App() {
   const { currentUser } = useContext(AuthContext);
@@ -29,6 +32,7 @@ function App() {
         <div className={`theme-${darkMode ? "dark" : "light"}`}>
           <Navbar />
           <div style={{ display: "flex" }}>
+            <LeftBar />
             <div style={{ flex: 6 }}>
               <Outlet />
             </div>
@@ -62,6 +66,14 @@ function App() {
         {
           path: "/profile/:id",
           element: <Profile />,
+        },
+        {
+          path: "/search",
+          element: <SearchFriends />,
+        },
+        {
+          path: "/bookmarks",
+          element: <BookMarks />,
         },
       ],
     },

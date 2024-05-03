@@ -44,6 +44,7 @@ export const getBookmarkedPosts = (req, res) => {
     // Step 1: Fetch bookmarked posts based on the user ID
     const query = "SELECT * FROM bookmarks WHERE userId = ?";
     db.query(query, [userId], (err, results) => {
+      console.log(`useroooo` + userId);
       if (err) {
         console.error("Error fetching bookmarked posts:", err);
         return res

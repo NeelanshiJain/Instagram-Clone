@@ -41,7 +41,7 @@ const Posts = ({ userId }) => {
   return (
     <div className="posts">
       <h2>All Posts</h2>
-      <br></br>
+
       {posts.map((post) => (
         <Post post={post} key={post.id} />
       ))}
