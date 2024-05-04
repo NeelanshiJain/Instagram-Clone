@@ -31,7 +31,6 @@ function SearchFriends() {
 
   const handleAddFriend = async (username, userId) => {
     try {
-      console.log(`testing`);
       await axios.post("http://localhost:8800/api/", {
         receiverName: username,
         user: userId,

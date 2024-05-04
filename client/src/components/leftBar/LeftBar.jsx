@@ -25,25 +25,9 @@ const LeftBar = () => {
           <div className="user">
             <img src={"/upload/" + currentUser.profilePic} alt="" />
             <span>{currentUser.name}</span>
-            <a href="/profile/">
-              Search <i className="fa fa-search"></i>
-            </a>
           </div>
           <div className="item">
             <img src={Friends} alt="" />
-            <a href="/search">
-              Search <i className="fa fa-search"></i>
-            </a>
-          </div>
-          <div className="item">
-            <img src={Friends} alt="" />
-            <a href="/bookmarks">Bookmarks</a>
-          </div>
-          <div className="item">
-            <img src={Friends} alt="" />
-            <a href="/posts">
-              Search <i className="fa fa-search"></i>
-            </a>
             <span>Friends</span>
           </div>
           <div className="item">

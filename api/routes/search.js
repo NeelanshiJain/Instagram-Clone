@@ -5,25 +5,11 @@ import { db } from "../connect.js";
 
 router.get("/", async (req, res) => {
   try {
-    // const [result] = await db.query("SELECT * FROM users WHERE id != ?", [
-    //   userId,
-    // ]);
-
     let q = "SELECT * FROM users";
     db.query(q, (err, data) => {
       if (err) return res.status(500).json(err);
-      console.log(data);
       return res.json(data);
     });
-
-    // res.render("search", {
-    //   result,
-    //   sent: sentRequestRows,
-    //   friends: friendsRows,
-    //   received: receivedRows,
-    // });
-    // console.log(`resukt` + result);
-    // res.json(result);
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -38,25 +24,11 @@ router.post("/", async (req, res) => {
     const { username } = req.body;
     if (searchfriend) {
       let mssg = "";
-      // if (searchfriend === req.user.username) {
-      //   searchfriend = null;
-      // }
-      // const result = db.query(, [
-      //   searchfriend,
-      // ]);
       let q = "SELECT * FROM users WHERE username = ?";
       db.query(q, [searchfriend], (err, data) => {
         if (err) return res.status(500).json(err);
-        console.log(data);
         return res.json(data);
       });
-
-      // return res.render("search", {
-      //   result,
-      //   mssg,
-      // });
-      // console.log(data);
-      // return res.json(result);
     } else if (receiverName) {
       await Promise.all([
         db.query("INSERT INTO requests SET ?", {
@@ -78,7 +50,7 @@ router.post("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    // Your file upload logic with MySQL
+    //  file logic with MySQL
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");

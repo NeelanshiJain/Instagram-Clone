@@ -7,7 +7,6 @@ export const addBookmark = (req, res) => {
   if (!token) return res.status(401).json("Not logged in!");
 
   jwt.verify(token, "secretkey", (err, userInfo) => {
-    console.log(userInfo);
     const query = "INSERT INTO bookmarks (userId, postId) VALUES (?, ?)";
     db.query(query, [userInfo.id, req.body.postId], (err, result) => {
       if (err) return res.status(500).json(err);
@@ -44,7 +43,6 @@ export const getBookmarkedPosts = (req, res) => {
     // Step 1: Fetch bookmarked posts based on the user ID
     const query = "SELECT * FROM bookmarks WHERE userId = ?";
     db.query(query, [userId], (err, results) => {
-      console.log(`useroooo` + userId);
       if (err) {
         console.error("Error fetching bookmarked posts:", err);
         return res
@@ -54,7 +52,7 @@ export const getBookmarkedPosts = (req, res) => {
 
       // Step 2: Extract post IDs from bookmarked posts
       const postIds = results.map((bookmark) => bookmark.postId);
-      console.log(postIds);
+
       // Step 3: Fetch details of all bookmarked posts in a single query
       if (postIds.length > 0) {
         const postQuery = `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId) WHERE p.id IN (?) ORDER BY p.createdAt DESC`;

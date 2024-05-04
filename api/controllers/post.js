@@ -3,69 +3,17 @@ import jwt from "jsonwebtoken";
 import moment from "moment";
 
 export const getPosts = (req, res) => {
-  const userId = req.query.userId;
-  const token = req.cookies.accessToken;
-  const cursor = req.headers.cursor;
+  const cursor = req.headers["x-cursor"];
+  const limit = req.query.limit || 2; // Default limit is 10
+  let query = `SELECT * FROM posts ORDER BY createdAt DESC LIMIT ${limit}`;
 
-  if (!token) return res.status(401).json("Not logged in!");
+  if (cursor) {
+    query = `SELECT * FROM posts WHERE createdAt < '${cursor}' ORDER BY createdAt DESC LIMIT ${limit}`;
+  }
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
-    if (err) return res.status(403).json("Token is not valid!");
-    let baseQuery = `
-      SELECT p.*, u.id AS userId, name, profilePic 
-      FROM posts AS p 
-      JOIN users AS u ON (u.id = p.userId)
-    `;
-    let condition = "";
-    let values = [];
-
-    if (!userInfo || !userInfo.id) {
-      condition = " WHERE p.visibility = 'public'";
-    } else {
-      condition = `
-        WHERE p.visibility = 'public' OR 
-        (p.visibility = 'friends_only' AND (
-          p.userId = ? OR 
-          p.userId IN (SELECT followedUserId FROM relationships WHERE followerUserId = ?)
-        ))
-      `;
-      values = [userInfo.id, userInfo.id];
-    }
-
-    if (cursor) {
-      condition += " AND p.createdAt < ?";
-      values.push(cursor);
-    }
-
-    baseQuery += condition + " ORDER BY p.createdAt DESC LIMIT 5";
-    console.log(baseQuery);
-    console.log(values);
-    db.query(baseQuery, values, (err, data) => {
-      if (err) return res.status(500).json(err);
-
-      const hasNextPage = data.length === 2; // Check if there are more posts
-      // Extract the next cursor from the data
-      const nextCursor = hasNextPage ? data[data.length - 1].createdAt : null;
-
-      // Format the nextCursor to match the format in the database
-      const formattedNextCursor = nextCursor
-        ? moment(nextCursor).format("YYYY-MM-DD HH:mm:ss")
-        : null;
-
-      // Set the nextCursor in the response headers
-      if (formattedNextCursor) {
-        res.setHeader("nextCursor", formattedNextCursor);
-      }
-      const responseData = {
-        posts: data,
-        hasNextPage: hasNextPage,
-        nextCursor: formattedNextCursor,
-      };
-      console.log(`previouscursor` + cursor);
-      console.log(`nextcursor` + formattedNextCursor);
-      console.log(`resonsedata` + responseData.nextCursor);
-      return res.status(200).json(responseData);
-    });
+  db.query(query, (err, results) => {
+    if (err) throw err;
+    res.json(results);
   });
 };
 
@@ -128,21 +76,41 @@ export const editPost = (req, res) => {
 };
 
 export const getTrendingPosts = (req, res) => {
-  let q = `SELECT p.*, tp.likesCount, u.id AS userId, name, profilePic 
+  const token = req.cookies.accessToken;
+  const cursor = req.headers.cursor;
+
+  if (!token) return res.status(401).json("Not logged in!");
+
+  jwt.verify(token, "secretkey", (err, userInfo) => {
+    if (err) return res.status(403).json("Token is not valid!");
+    let q = `SELECT p.*, tp.likesCount, u.id AS userId, name, profilePic 
   FROM trending_posts AS tp
   JOIN posts AS p ON tp.postId = p.id
   JOIN users AS u ON p.userId = u.id`;
 
-  let condition = "";
-  condition = " WHERE p.visibility = 'public'";
-  q += condition;
-  console.log("qqqqqqqqqqqq");
-  console.log(q);
-  db.query(q, (err, data) => {
-    if (err) {
-      console.error("Error fetching trending posts:", err);
-      return res.status(500).json({ error: "Internal server error" });
+    let condition = "";
+    let values = [];
+
+    if (!userInfo || !userInfo.id) {
+      condition = " WHERE p.visibility = 'public'";
+    } else {
+      condition = `
+        WHERE p.visibility = 'public' OR 
+        (p.visibility = 'friends_only' AND (
+          p.userId = ? OR 
+          p.userId IN (SELECT followedUserId FROM relationships WHERE followerUserId = ?)
+        ))
+      `;
+      values = [userInfo.id, userInfo.id];
     }
-    res.status(200).json(data);
+
+    q += condition;
+    db.query(q, values, (err, data) => {
+      if (err) {
+        console.error("Error fetching trending posts:", err);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+      res.status(200).json(data);
+    });
   });
 };

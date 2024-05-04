@@ -45,7 +45,6 @@ const updateTrendingPosts = () => {
             console.error("Error inserting trending posts:", insertErr);
             return;
           }
-          console.log("Trending posts updated successfully.");
         }
       );
     });

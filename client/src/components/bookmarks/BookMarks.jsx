@@ -14,7 +14,7 @@ const BookMarks = () => {
   useQuery(["bookmarks"], () =>
     makeRequest.get("/bookmarks").then((res) => {
       setBookMarks(res.data);
-      //return res.data;
+      return res.data;
     })
   );
 

@@ -5,25 +5,32 @@
 // import { makeRequest } from "../../axios";
 import "./trendingpost.scss";
 import Post from "../post/Post";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { makeRequest } from "../../axios";
 
 const TrendingPosts = () => {
   const [trendingPosts, setTrendingPosts] = useState([]);
 
-  useEffect(() => {
-    const fetchTrendingPosts = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8800/api/posts/trending"
-        );
-        setTrendingPosts(response.data);
-      } catch (error) {
-        console.error("Error fetching trending posts:", error);
-      }
-    };
-    fetchTrendingPosts();
-  }, []);
+  useQuery(["posts/trending"], () =>
+    makeRequest.get("/posts/trending").then((res) => {
+      setTrendingPosts(res.data);
+      return res.data;
+    })
+  );
+  // useEffect(() => {
+  //   const fetchTrendingPosts = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         "http://localhost:8800/api/posts/trending"
+  //       );
+  //       setTrendingPosts(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching trending posts:", error);
+  //     }
+  //   };
+  //   fetchTrendingPosts();
+  // }, []);
 
   return (
     <div>

@@ -27,6 +27,7 @@ const Home = () => {
       <Share />
       <TrendingPosts />
       <Posts />
+
       <Stories />
     </div>
   );

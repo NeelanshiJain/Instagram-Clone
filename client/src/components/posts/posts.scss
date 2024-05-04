@@ -1,5 +1,10 @@
-.posts{
+.posts {
   display: flex;
   flex-direction: column;
   gap: 50px;
+}
+button {
+  padding: 10px 20px; // Adjust padding to increase button size
+  font-size: 20px; // Adjust font size if needed
+  color: red;
 }
