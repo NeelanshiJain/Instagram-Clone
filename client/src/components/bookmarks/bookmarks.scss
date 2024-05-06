@@ -1,0 +1,109 @@
+.post {
+  border-radius: 10px;
+  background-color: #ffc0cb; // Pink background color for bookmarks
+  color: #333; // Dark text color
+  margin-bottom: 20px; // Increased space between each bookmark
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.2);
+  }
+
+  .container {
+    padding: 20px;
+
+    .user {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+
+      .userInfo {
+        display: flex;
+        gap: 10px;
+
+        img {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+
+        .details {
+          display: flex;
+          flex-direction: column;
+
+          .name {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333; // Dark text color
+          }
+
+          .date {
+            font-size: 12px;
+            color: #777; // Lighter text color
+          }
+        }
+      }
+
+      button {
+        border: none;
+        padding: 8px 16px;
+        border-radius: 5px;
+        background-color: #007bff; // Blue button color
+        color: white;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: #0056b3; // Darker blue on hover
+        }
+      }
+    }
+
+    .content {
+      margin-top: 20px;
+
+      img {
+        width: 100%;
+        max-height: 300px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-top: 10px;
+      }
+    }
+
+    .info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between; // Ensure three dots are at the end
+      gap: 10px;
+      margin-top: 20px;
+
+      .item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+
+        svg {
+          width: 16px;
+          height: 16px;
+          fill: #777; // Lighter text color
+        }
+
+        span {
+          color: #777; // Lighter text color
+        }
+
+        &:hover {
+          span {
+            color: #333; // Darker text color on hover
+          }
+        }
+      }
+    }
+  }
+}

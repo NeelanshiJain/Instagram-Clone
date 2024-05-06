@@ -15,6 +15,13 @@ import updateTrendingPosts from "./cron/updateTrendingPosts.js"; // Import the s
 import storyRoutes from "./routes/stories.js";
 import searchRoutes from "./routes/search.js";
 
+import dotenv from "dotenv";
+// Load the environment variables from the .env file
+dotenv.config();
+
+// Now you can access your environment variables
+const port = process.env.PORT;
+
 //middlewares
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", true);
@@ -61,6 +68,6 @@ cron.schedule("*/60 * * * * *", () => {
   console.log("cron");
 });
 
-app.listen(8800, () => {
+app.listen(port || 8800, () => {
   console.log("API working!");
 });

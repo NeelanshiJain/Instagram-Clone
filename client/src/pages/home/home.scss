@@ -1,17 +1,30 @@
 @import "../../style.scss";
 
 .home {
-  @include themify($themes) {
-    padding: 20px 70px;
-    background-color: themed("bgSoft");
-    min-height: 100vh;
+  padding: 20px 70px;
+  background-color: aqua; /* Use variable instead of themed function */
+  min-height: 100vh;
 
-    @include mobile {
-      padding: 10px;
-    }
-
-    @include tablet {
-      padding: 20px;
-    }
+  @include mobile {
+    padding: 10px;
   }
+
+  @include tablet {
+    padding: 20px;
+  }
+}
+
+/* Style for Share component */
+.share {
+  margin-bottom: 20px; /* Add space between Share and TrendingPosts */
+}
+
+/* Style for TrendingPosts component */
+.trending-posts {
+  margin-bottom: 20px; /* Add space between TrendingPosts and Posts */
+}
+
+/* Style for Posts component */
+.posts {
+  margin-bottom: 20px; /* Add space between Posts and Stories */
 }
