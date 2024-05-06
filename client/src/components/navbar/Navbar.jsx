@@ -1,5 +1,5 @@
 import "./navbar.scss";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
@@ -22,12 +22,15 @@ const Navbar = () => {
         <Link to="/" style={{ textDecoration: "none" }}>
           <span>Instagram</span>
         </Link>
-        <HomeOutlinedIcon />
+
         {darkMode ? (
           <WbSunnyOutlinedIcon onClick={toggle} />
         ) : (
           <DarkModeOutlinedIcon onClick={toggle} />
         )}
+        <a href="/">
+          Home <i className="fa fa-search"></i>
+        </a>
         <a href="/search">
           Search <i className="fa fa-search"></i>
         </a>

@@ -4,7 +4,7 @@ import moment from "moment";
 
 export const getPosts = (req, res) => {
   const cursor = req.headers["x-cursor"];
-  const limit = req.query.limit || 2; // Default limit is 10
+  const limit = req.query.limit || 5; // Default limit is 10
   let query = `SELECT * FROM posts ORDER BY createdAt DESC LIMIT ${limit}`;
 
   if (cursor) {
